@@ -59,14 +59,43 @@ function MyArrayPrototype() {
             callback.call(thisArg, this[i], i, this);
         }
     };
+    this.concat = function (...args) {
+        const concatArr = new MyArray();
+        for (let i = 0; i < this.length; i++) {
+            concatArr.push(this[i]);
+        }
+
+        for (let i = 0; i < args.length; i++) {
+            const currentElement = args[i];
+
+            if (currentElement === undefined) continue;
+
+            if (currentElement instanceof MyArray) {
+                for (let j = 0; j < currentElement.length; j++) {
+                    concatArr.push(currentElement[j]);
+                }
+            } else {
+                concatArr.push(currentElement);
+            }
+        }
+        return concatArr;
+    };
 }
 
 MyArray.prototype = new MyArrayPrototype();
 
 const newArr = new MyArray();
 
+const newArr2 = new MyArray(1, 2, 3);
+
 console.log(newArr.push(100));
 
 console.log(newArr);
 
 newArr.forEach((item) => console.log(item + 99));
+
+console.log(newArr.concat(100));
+
+console.log(newArr.concat(newArr2));
+
+console.log(newArr === newArr.concat());
