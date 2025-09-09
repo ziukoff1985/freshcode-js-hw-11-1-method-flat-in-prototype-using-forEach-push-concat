@@ -47,12 +47,14 @@ function MyArrayPrototype() {
         const flatArr = new MyArray();
 
         function flatten(source, currentDepth) {
-            let tempArr = new MyArray();
+            const tempArr = new MyArray();
             source.forEach((item) => {
                 if (item instanceof MyArray && currentDepth > 0) {
                     const child = flatten(item, currentDepth - 1);
-                    tempArr = tempArr.concat(child);
-                } else {
+                    child.forEach((element) => {
+                        if (element !== undefined) tempArr.push(element);
+                    });
+                } else if (item !== undefined) {
                     tempArr.push(item);
                 }
             });
@@ -74,16 +76,13 @@ const newArr = new MyArray(
 console.log(newArr);
 console.log(newArr.flat(2));
 console.log(newArr.flat(3));
-console.log(newArr.flat(4));
-console.log(newArr.flat(Infinity));
-console.log(newArr.flat(0));
 
-function MyArray(...args) {
-    this.length = args.length;
-    for (let i = 0; i < args.length; i++) {
-        this[i] = args[i];
-    }
-}
+// function MyArray(...args) {
+//     this.length = args.length;
+//     for (let i = 0; i < args.length; i++) {
+//         this[i] = args[i];
+//     }
+// }
 
 // MyArray.prototype.flat = function (depth = 1) {
 //     const flatResult = new MyArray();
