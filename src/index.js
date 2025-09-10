@@ -9,11 +9,9 @@ function MyArray(...args) {
 
 function MyArrayPrototype() {
     this.push = function (...args) {
-        if (args.length > 0) {
-            for (let i = 0; i < args.length; i++) {
-                this[this.length] = args[i];
-                this.length++;
-            }
+        for (let i = 0; i < args.length; i++) {
+            this[this.length] = args[i];
+            this.length++;
         }
         return this.length;
     };
@@ -25,56 +23,57 @@ function MyArrayPrototype() {
     this.concat = function (...args) {
         const concatArr = new MyArray();
 
-        for (let i = 0; i < this.length; i++) {
-            concatArr.push(this[i]);
-        }
+        this.forEach((item) => {
+            concatArr.push(item);
+        });
 
-        for (let i = 0; i < args.length; i++) {
-            const currentElement = args[i];
-
-            if (currentElement instanceof MyArray) {
-                for (let j = 0; j < currentElement.length; j++) {
-                    if (currentElement[j] === undefined) continue;
-                    concatArr.push(currentElement[j]);
-                }
+        args.forEach((item) => {
+            if (item instanceof MyArray) {
+                item.forEach((element) => {
+                    concatArr.push(element);
+                });
             } else {
-                concatArr.push(currentElement);
+                concatArr.push(item);
             }
-        }
+        });
+
         return concatArr;
     };
     this.flat = function (depth = 1) {
         const flatArr = new MyArray();
 
         function flatten(source, currentDepth) {
-            const tempArr = new MyArray();
             source.forEach((item) => {
                 if (item instanceof MyArray && currentDepth > 0) {
-                    const child = flatten(item, currentDepth - 1);
-                    child.forEach((element) => {
-                        if (element !== undefined) tempArr.push(element);
-                    });
+                    flatten(item, currentDepth - 1);
                 } else if (item !== undefined) {
-                    tempArr.push(item);
+                    flatArr.push(item);
                 }
             });
-            return tempArr;
         }
 
-        return flatArr.concat(flatten(this, depth));
+        flatten(this, depth);
+        return flatArr;
     };
 }
 
 MyArray.prototype = new MyArrayPrototype();
 
 const newArr = new MyArray(
-    undefined,
+    1,
     new MyArray(10, new MyArray(100, new MyArray(1000, new MyArray(10000)))),
     new MyArray()
 );
 
+const newArr2 = new MyArray();
+const newArr3 = new MyArray(1, new MyArray(2));
+
+console.log(newArr2.concat(newArr3));
+// console.log(newArr2.push(1));
+// console.log(newArr2);
+
 console.log(newArr);
-console.log(newArr.flat(2));
+console.log(newArr.flat());
 console.log(newArr.flat(3));
 
 // function MyArray(...args) {
@@ -113,3 +112,17 @@ console.log(newArr.flat(3));
 // console.log(newMyArray.flat(4));
 // console.log(newMyArray.flat(Infinity));
 // console.log(newMyArray.flat(0));
+
+const arr3 = [1, undefined, 3, 4];
+const arr4 = [5, 6, undefined, 8];
+console.log(arr3.concat(arr4));
+
+const arr5 = [1, [undefined, [3, undefined]]];
+
+console.log(arr5.flat());
+
+const arr6 = new MyArray(1, [undefined, [3, undefined]]);
+
+const arr7 = new MyArray(1, [undefined, [3, undefined]]);
+
+console.log(arr6.concat(arr7));
